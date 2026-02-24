@@ -8,6 +8,6 @@ const {authorize} = require("../middleware/role.middleware");
 
 router.post("/", protect, authorize("instructor"), createCourse);
 
-router.get("/", getAllCourses);
+router.get("/", protect, getAllCourses);
 
 module.exports = router;

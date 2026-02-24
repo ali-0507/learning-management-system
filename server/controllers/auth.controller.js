@@ -93,8 +93,8 @@ exports.loginUser = async (req, res) => {
 
        res.cookie("token", token, {
          httpOnly: true,
-         secure: false,   // set true in production time
-         sameSite: "lax",
+         secure: process.env.NODE_ENV === "production",
+         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
          maxAge: 24 * 60 * 60 * 1000,
        });
 
@@ -115,3 +115,39 @@ exports.loginUser = async (req, res) => {
          });
     }
 };
+
+exports.logout = async (req, res) => {
+  try {
+    res
+      .clearCookie("token", {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: false // 
+      })
+      .status(200)
+      .json({
+        success: true,
+        message: "Logged out successfully"
+      });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+
+exports.getMe = async (req, res) =>{
+    try{
+       res.status(200).json({
+        success:true,
+        data:req.user,
+       });
+    }catch(err){
+      res.status(500).json({
+       success: false,
+       message: "Server error"
+    });
+    }
+}

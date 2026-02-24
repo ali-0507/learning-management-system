@@ -53,3 +53,82 @@ exports.markLessonComplete = async (req, res) => {
     });
    }
 }
+
+
+exports.getCompletedLessons = async (req, res) =>{
+   try{
+    const { courseId } = req.params;
+
+    const lessons = await Lesson.find({ course: courseId }).select("_id");
+
+    const lessonIds = lessons.map(l => l._id);
+
+    const completed = await Progress.find({
+      student: req.user._id,
+      lesson: { $in: lessonIds }
+    }).select("lesson");
+
+    const completedIds = completed.map(c => c.lesson);
+
+    res.status(200).json({
+      success: true,
+      data: completedIds
+    });
+   }catch(err){
+      res.status(500).json({
+         success:false,
+         message:"Server error"
+      });
+   }
+}
+
+
+
+exports.getCourseProgressForInstructor = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+
+    const lessons = await Lesson.find({ course: courseId });
+
+    const totalLessons = lessons.length;
+
+    const enrollments = await Enrollment.find({ course: courseId })
+      .populate("student", "name email");
+
+    const result = [];
+
+    for (const enrollment of enrollments) {
+      const studentId = enrollment.student._id;
+
+      const completedCount = await Progress.countDocuments({
+        student: studentId,
+        lesson: { $in: lessons.map(l => l._id) }
+      });
+
+      const percentage =
+        totalLessons === 0
+          ? 0
+          : Math.round((completedCount / totalLessons) * 100);
+
+      result.push({
+        studentId,
+        studentName: enrollment.student.name,
+        email: enrollment.student.email,
+        totalLessons,
+        completedLessons: completedCount,
+        progressPercentage: percentage,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};

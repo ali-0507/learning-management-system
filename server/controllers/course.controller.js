@@ -72,22 +72,3 @@ exports.getAllCourses = async (req, res) => {
      }
 }
 
-
-// Instructor specific courses
-exports.getInstructorCourses = async (req, res) => {
-  try {
-    const courses = await Course.find({
-      instructor: req.user._id,
-    }).populate("instructor", "name email");
-
-    res.status(200).json({
-      success: true,
-      data: courses,
-    });
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
-  }
-};

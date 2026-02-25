@@ -11,7 +11,7 @@ function InstructorDashboard() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await api.get("/courses");
+        const res = await api.get("/courses/instructor");
         setCourses(res.data.data);
       } catch (err) {
         setError("Failed to load courses");

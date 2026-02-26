@@ -9,6 +9,7 @@ https://learning-management-system-olive-rho.vercel.app/
 ## Live Deployment:
 ### Frontend: https://learning-management-system-olive-rho.vercel.app/
 ### Backend: https://learning-management-system-backend-y7df.onrender.com/
+- add api call /api/test to check whether url is working or not
 
 ## Tech Stack
 ### Frontend:
